@@ -59,13 +59,14 @@ Mixins
 - RetrieveModelMixin (retrive)
 - UpdateModelMixin (update)
 - DestroyModelMixin (destroy)
-
+```
 for example `APIView` allow you to:
  create--------------+-+\
  destroy-------------+-| \
  update--------------+-|  `APIView`: allow you 
  retrive-------------+-|  / makes all those action
  listOfrecords-------+-+/
+ ```
 
  ![alt text](image.png)
 
@@ -278,11 +279,11 @@ helps you manage API endpoints for resources with hierarchical relationships.
 Understanding Nested Data:
 
 Imagine a scenario where you have models representing Author and Book. An Author can have many Books associated with them. This creates a nested relationship between these models.
- 
+ ```
   http://127.0.0.1:8000/store/author/2/books
                                      \
                                       [author's id]
-
+```
 
 For using Nested Routers: 
 `
@@ -309,12 +310,12 @@ router.register(
 domains_router = routers.NestedSimpleRouter(router, r'product', lookup='product') # 
 domains_router.register(r'reviews', views.ReviewModelVIew, basename='product-reviews')
 ```
-
+```
  when we talk about hierarchical relationship:
  http://127.0.0.1:8000/store/product/2/reviews
                                 +----+---------------['domain']
                                      +---------------[lookup]
-
+```
 In this case, for better understanding, we're making the relation 
 ID with a simple integer example, but normally those are defined in
 a large string representation.

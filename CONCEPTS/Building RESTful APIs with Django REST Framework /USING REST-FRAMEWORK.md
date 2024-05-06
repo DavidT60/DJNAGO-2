@@ -17,7 +17,7 @@ INSTALLED_APPS = [
 path('api-auth/', include('rest_framework.urls'))
 ```
 
-# ADDING ID TO THE END POINT
+# ADDING ID TO THE END POINT *(IN  YOUR APP)
 Capturing the ID in the URL Path:
 
 URL Patterns: When defining your URL patterns, incorporate a capture group using <int:pk> or <int:id> (depending on your ID field type) within the endpoint path. This placeholder will capture the ID value from the incoming request URL.
