@@ -1,45 +1,182 @@
+from django.shortcuts import get_list_or_404, get_object_or_404
+
 from decimal import Decimal
 from rest_framework import serializers
-from .models import Product, Collection, Review
+from . import models 
 
 
 # COLLECTION SERIALIZER SECTION #
 class CollectionSerializer(serializers.ModelSerializer):
     products_counts = serializers.IntegerField(read_only=True)
     class Meta:
-         model = Collection
+         model = models.Collection
          fields = ['title', 'products_counts']
 
 
 # PRODUCT SERIALIZER SECTION #
 class ProductSerializer(serializers.ModelSerializer): 
  
-    def tax_calculation(self, product:Product):
+    def tax_calculation(self, product:models.Product):
              return product.unit_price  
     
     collection = serializers.PrimaryKeyRelatedField(
-        queryset= Collection.objects.all()
+        queryset= models.Collection.objects.all()
     )
  
     price_with_taxt = serializers.SerializerMethodField(method_name='tax_calculation')
 
 
     class Meta:
-        model = Product
-        fields = ['title', 'collection', 'unit_price', 'price_with_taxt']
+        model = models.Product
+        fields = ['id','title', 'collection', 'unit_price', 'price_with_taxt']
 
-    # overwritting data:
+    #overwritting data:
     def validate(self, attrs):
           print("Data Validation...")
           print(attrs)
           return super().validate(attrs)
 
+
+
+
+
 # COLLECTION SERIALIZER SECTION #
 class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
-         model = Review
+         model = models.Review
          fields = ['id','name', 'text']
     
     def create(self, validated_data):
          get_product_content_id = self.context['product_id']
-         return Review.objects.create(product_id=get_product_content_id, **validated_data)
+         return models.Review.objects.create(product_id=get_product_content_id, **validated_data)
+
+
+
+# Cart Items Serializer 
+class CartItemsSerializerPatch(serializers.ModelSerializer):
+    
+    class Meta:
+         model = models.CartItem
+         fields = [
+                   'quantity',
+                  ]
+ 
+
+class CartItemsSerializer(serializers.ModelSerializer):
+    
+    total_price = serializers.SerializerMethodField()
+    product = ProductSerializer()
+    
+    def get_total_price(self ,model:models.CartItem):
+      return model.quantity * model.product.unit_price
+    
+    class Meta:
+         model = models.CartItem
+         fields = [
+                   'product',
+                   'quantity',
+                   'total_price',
+                  ]
+ 
+    def create(self, validated_data):
+         get_cart_content_id = self.context['uui_id']
+         print('Unique uuiD')
+         print(get_cart_content_id)
+         return models.CartItem.objects.create(cart_id=get_cart_content_id, **validated_data)
+    
+
+class CartItemsSerializerPost(serializers.ModelSerializer):
+
+
+     class Meta: 
+          model = models.CartItem
+          fields = ['id','product', 'quantity']
+
+
+     # DRF supports a special method naming convention             # 
+     # for field-level validation. You can define a method         #
+     # named validate_<field_name> within your serializer class.\  #
+     # This method receives the serializer instance and the field  #
+     # value as arguments.                                         #
+     def validate_product_id(self, value):
+          if not models.Product.objects.filter(pk=value).exists():
+             raise serializers.ValidationError('This Product does not exists.')
+          return value
+     
+     
+     def save(self, **kwargs):
+          # Current Tranfer:
+          cart_id = self.context['uui_id']
+          product_id = self.validated_data['product'] 
+          quantity = self.validated_data['quantity']
+          
+
+          print(cart_id)
+          print(product_id)
+          print(quantity)
+          
+          try:
+             print("UPDATE")
+             update_cartitmes = models.CartItem.objects.get(cart_id=cart_id, product_id=product_id)
+             update_cartitmes.quantity += quantity
+             update_cartitmes.save()
+             self.instance = update_cartitmes
+          except models.CartItem.DoesNotExist:        
+             print("CREATE")
+             create_cartitmes = models.CartItem.objects.create(cart_id=cart_id, **self.validated_data)
+             create_cartitmes.save()
+             self.instance = create_cartitmes
+            
+          return self.instance
+
+    
+
+# Cart Serializer 
+class CartSerializer(serializers.ModelSerializer):
+
+    id = serializers.UUIDField(read_only=True)
+    cartitems = CartItemsSerializer(many=True, read_only=True)    
+    total_to_pay = serializers.SerializerMethodField()
+
+    def get_total_to_pay(self, cart):
+         total = sum([items.quantity * items.product.unit_price for items in cart.cartitems.all()])
+         return total
+    
+    class Meta:
+         model = models.Cart
+         fields = [
+              'id',
+              'created_at',
+              'cartitems',
+              'total_to_pay',
+         ]
+
+# Cart Serializer 
+class CustomerSerializer(serializers.ModelSerializer):    
+    user_id = serializers.IntegerField(read_only=True)
+    class Meta:
+         model = models.Customer
+         fields = [
+          'user_id',
+          'phone',
+          'birth_date',
+          'membership'
+         ]
+
+
+# cart Itmes
+# In the time saving the data Update Quantity
+# Product:     quantity:      total_to_play:  
+#  Mango          3              30$
+
+#> When add another mango to the table it will no add a new roll like: 
+
+# In the time saving the data Update Quantity
+# Product:     quantity:      total_to_play:  
+#  Mango          3              30$
+#  Mango          2              20$
+
+# Insted the idea is the next:
+# In the time saving the data Update Quantity
+# Product:     quantity:      total_to_play:  
+#  Mango          5              50$

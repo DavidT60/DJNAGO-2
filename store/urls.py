@@ -15,14 +15,36 @@ router.register(
 )
 
 
-domains_router = routers.NestedSimpleRouter(router, r'product', lookup='product')
-domains_router.register(r'reviews', views.ReviewModelVIew, basename='product-reviews')
+router.register(
+    'cart',
+    views.CartModelVIew,
+    basename='cart'
+)
+
+
+router.register(
+    'customer',
+    views.CustomerView,
+    basename='customer'
+)
+
+
+
+# Product Nested Router #
+domains_router_product= routers.NestedSimpleRouter(router, r'product', lookup='product')
+domains_router_product.register(r'reviews', views.ReviewModelVIew, basename='product-reviews')
+
+# Cart Nested Router 
+
+domains_router_cart = routers.NestedSimpleRouter(router, r'cart', lookup='cart')
+domains_router_cart.register(r'cartitems', views.CartItemsModelVIew, basename='cart-reviews')
 
 
 # URLConf
 urlpatterns = [
     path('',include(router.urls)),
-    path('',include(domains_router.urls)),
+    path('',include(domains_router_product.urls)),
+    path('',include(domains_router_cart.urls)),
 
 ] 
 print(urlpatterns)

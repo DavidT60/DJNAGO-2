@@ -11,6 +11,10 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
+from datetime import timedelta
+
+
+AUTH_USER_MODEL='party.Users'
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,7 +29,8 @@ SECRET_KEY = 'django-insecure-hs6j037urx6iav+7#10%-vu4l4f5@@-1_zo)oft4g7$vf2$jmp
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
+
 
 
 # Application definition
@@ -40,12 +45,15 @@ INSTALLED_APPS = [
     'rest_framework',
     'debug_toolbar',
     'django_filters',
-    'playground',
+    'djoser',
+    'party',
     'store',
-    'store_custom',
     'tags',
-    'likes'
+    'likes',
+
 ]
+
+
 
 MIDDLEWARE = [
     'debug_toolbar.middleware.DebugToolbarMiddleware',
@@ -58,9 +66,12 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+
 INTERNAL_IPS = [
     # ...
     '127.0.0.1',
+    '10.0.0.16',
+    '10.0.0.10'
     # ...
 ]
 
@@ -82,24 +93,37 @@ TEMPLATES = [
     },
 ]
 
+
 WSGI_APPLICATION = 'storefront.wsgi.application'
 
+
 REST_FRAMEWORK = {
-    'COERCE_DECIMAL_TO_STRING':False
+    'COERCE_DECIMAL_TO_STRING':False,
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
 }
 
-# Database
+
+SIMPLE_JWT = {
+    "AUTH_HEADER_TYPES": ('JWT',),
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "UPDATE_LAST_LOGIN": True,
+  }
+
+
+#- Database -#
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 DATABASES = {
     'default': {
        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'Django-2',
+        'NAME': 'DJANGO-34',
         'HOST': 'localhost',
         'USER': 'postgres',
         'PASSWORD': '1234'
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -143,3 +167,11 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+DJOSER = {
+    'SERIALIZERS': {
+        'user_create':'party.serializer.UserCreateSerializer',
+        'current_user': 'party.serializer.UserSerializer',
+
+    },
+}

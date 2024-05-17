@@ -1,5 +1,7 @@
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.conf import settings
+from uuid import uuid4
 
 
 class Promotion(models.Model):
@@ -39,22 +41,29 @@ class Customer(models.Model):
 
     MEMBERSHIP_CHOICES = [
         (MEMBERSHIP_BRONZE, 'Bronze'),
-        (MEMBERSHIP_SILVER, 'Silver'),
+        (MEMBERSHIP_SILVER, 'Silvers'),
         (MEMBERSHIP_GOLD, 'Gold'),
     ]
-    first_name = models.CharField(max_length=255)
-    last_name = models.CharField(max_length=255)
-    email = models.EmailField(unique=True)
+
     phone = models.CharField(max_length=255)
     birth_date = models.DateField(null=True, blank=True)
     membership = models.CharField(
         max_length=1, choices=MEMBERSHIP_CHOICES, default=MEMBERSHIP_BRONZE)
+    
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
-    def __str__(self):
-        return f'{self.first_name} {self.last_name}'
 
+    def first_name(self):
+        return self.user.first_name
+    
+    def last_name(self):
+        return self.user.last_name
+    
     class Meta:
-        ordering = ['first_name', 'last_name']
+        ordering = ['user__first_name', 'user__last_name']
+        permissions = [
+           ('view_history', 'Can view History')
+        ]
 
 
 class Order(models.Model):
@@ -71,7 +80,11 @@ class Order(models.Model):
     payment_status = models.CharField(
         max_length=1, choices=PAYMENT_STATUS_CHOICES, default=PAYMENT_STATUS_PENDING)
     customer = models.ForeignKey(Customer, on_delete=models.PROTECT)
-
+   
+    class Meta:
+        permissions = [
+            ('cancel_order', 'Can cancel Order')
+        ]
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.PROTECT)
@@ -81,23 +94,31 @@ class OrderItem(models.Model):
 
 
 class Address(models.Model):
-    street = models.CharField(max_length=255)
+    street = models.CharField(max_length=255,  error_messages={
+            "unique": ("A user with that username already exists."),
+        })
     city = models.CharField(max_length=255)
     customer = models.ForeignKey(
         Customer, on_delete=models.CASCADE)
-
-
-class Cart(models.Model):
-    created_at = models.DateTimeField(auto_now_add=True)
-
-
-class CartItem(models.Model):
-    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.PositiveSmallIntegerField()
-
 
 class Review(models.Model):
      product = models.ForeignKey(Product, on_delete=models.PROTECT)
      name  = models.CharField(max_length=255)
      text = models.TextField()
+
+class Cart(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid4)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+class CartItem(models.Model):
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='cartitems') 
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.PositiveSmallIntegerField()
+
+    class Meta:
+        unique_together = [[
+            'cart',
+            'product'
+        ]]
+
