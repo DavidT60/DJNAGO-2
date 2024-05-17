@@ -804,6 +804,7 @@
 
    Now we need to create a custom permission to see if
    this permission is already adeed for that user:
+   
     ```.py
       class HasPermissionHitory(permissions.BasePermission):
          """
@@ -812,11 +813,13 @@
          def has_permission(self, request:Request, view):
             print("Permission Checker:")
             return request.user.has_perm('store.view_history')
-   ```
+    ```
+   
    If the user does not have this permission, when trying to enter
    the endpoint action, it will show a response error indicating
    authentication.:
 
+    
    ![alt text](image-32.png)
 
    Let's give that permission from the admin panel:
