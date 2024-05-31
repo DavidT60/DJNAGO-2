@@ -828,4 +828,4 @@
    Let's try to access to the action end point again:
    ![alt text](image-34.png)
 
-   This is how modelcustom permission works in Django.
+   This is how modelCustom permission works in Django.

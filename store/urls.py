@@ -8,11 +8,19 @@ router.register(
     'collection',
     views.CollectionModelView
 )
+
 router.register(
     'product',
     views.ProductModelView,
     basename='product'
 )
+
+router.register(
+    'order',
+    views.OrderView,
+    basename='order'
+)
+
 
 
 router.register(
@@ -47,5 +55,5 @@ urlpatterns = [
     path('',include(domains_router_cart.urls)),
 
 ] 
-print(urlpatterns)
-print(router.urls)
+# print(urlpatterns)
+# print(router.urls)

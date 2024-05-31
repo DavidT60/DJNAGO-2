@@ -16,19 +16,17 @@ import django_filters
 
 
 from . import permissions as permisionCustom
-from .models import Product, Collection, Review, Cart, CartItem, Customer
-from . import serializer
+from .models import Product, Collection, Review, Cart, CartItem, Customer, Order
+from . import serializer as Serializer
 
 # COLLECTION VIEW SECTION #
 class CollectionModelView(ModelViewSet):
     """DOCUMENTATION ABOUT THIS MODULE"""
     queryset = Collection.objects.all().annotate(products_counts=Count('product')) 
     permission_classes = [permisionCustom.DjanggoObjectsPermisions]
-
-
    
     def get_serializer_class(self):
-       return serializer.CollectionSerializer
+       return Serializer.CollectionSerializer
     
     def get_serializer_context(self):
        return {'request': self.request}    
@@ -85,12 +83,11 @@ class ProductModelView(ModelViewSet):
         
 
    def get_serializer_class(self, *args, **kwargs):
-      return serializer.ProductSerializer
+      return Serializer.ProductSerializer
    
    def get_serializer_context(self):
       return {'request': self.request}
  
-
    def destroy(self, request, *args, **kwargs):
        product_object = get_object_or_404(Product, pk=kwargs['pk'])
        orderItem_product_count = product_object.orderitems.count()
@@ -100,6 +97,66 @@ class ProductModelView(ModelViewSet):
        return super().destroy(request, *args, **kwargs)
 
 
+# ORDER VIEW SECTION #
+class OrderView(ModelViewSet):
+    serializer_class = Serializer.OrderSerializer
+    http_method_names = [
+    "get",
+    "post",
+    "put",
+    "patch",
+    "delete",
+    "head",
+    "options",
+    "trace",
+    "connect"
+     ]
+
+    # Adding the permisiion class #
+    def get_permissions(self):
+        if self.request.method in ['PUT', 'UPDATE','PATCH','DELETE']:
+             print("ADMIN PERMISION ORDER")
+             return [permissions.IsAdminUser()] # Always return an object
+        return [permissions.IsAuthenticated()]
+
+    # Overwrite the create method form (ModelViewSet)
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        headers = self.get_success_headers(serializer.data)
+        order_serializer = self.perform_create(serializer)
+
+        OrderSerializer = Serializer.OrderSerializer(order_serializer)
+        return Response(OrderSerializer.data, status=status.HTTP_201_CREATED, headers=headers)
+    
+    # Overwrite the perform_create method form (ModelViewSet) Adding the return
+    def perform_create(self, serializer):
+      return  serializer.save()
+
+    def get_queryset(self):
+        user_type = self.request.user
+        user_id = Customer.objects.values('id').get(user_id=user_type.id)
+
+        # if the user is not part of the staff then data-user-only 
+        if not user_type.is_staff: 
+            return Order.objects.filter(customer_id=user_id['id'])
+        
+        # if the user is staff then retrunn all the data-list
+        return Order.objects.all()
+     
+    def get_serializer_class(self):
+        # IF THE REQUEST METHOD IS EQUAL TO POST
+        if self.request.method == "POST":
+            print("Posting Action...")
+            return Serializer.OrderCreateSerializer
+        return Serializer.OrderSerializer
+
+    def get_serializer_context(self):
+       return {
+          'request': self.request,
+          'get_user_id':self.request.user.id
+       }
+ 
 # REVIEW VIEW SECTION #
 class ReviewModelVIew(ModelViewSet):
     
@@ -107,7 +164,7 @@ class ReviewModelVIew(ModelViewSet):
         return Review.objects.filter(product_id=self.kwargs['product_pk'])
      
     def get_serializer_class(self):
-       return serializer.ReviewSerializer
+       return Serializer.ReviewSerializer
     
     def get_serializer_context(self):
        return {
@@ -119,7 +176,7 @@ class ReviewModelVIew(ModelViewSet):
 class CartModelVIew(ModelViewSet):
     
     queryset= Cart.objects.prefetch_related('cartitems__product').all() 
-    serializer_class = serializer.CartSerializer
+    serializer_class = Serializer.CartSerializer
    
     def get_serializer_context(self):
        return {
@@ -137,10 +194,10 @@ class CartItemsModelVIew(ModelViewSet):
     def get_serializer_class(self):
         print(self.request.user) # admin
         if self.request.method =='POST':
-           return serializer.CartItemsSerializerPost
+           return Serializer.CartItemsSerializerPost
         elif self.request.method == 'PUT':
-           return serializer.CartItemsSerializerPatch
-        return serializer.CartItemsSerializer
+           return Serializer.CartItemsSerializerPatch
+        return Serializer.CartItemsSerializer
 
     def get_serializer_context(self):
        return {
@@ -153,7 +210,7 @@ class CartItemsModelVIew(ModelViewSet):
 class CustomerView(ModelViewSet):
     
     queryset = Customer.objects.all()
-    serializer_class = serializer.CustomerSerializer
+    serializer_class = Serializer.CustomerSerializer
     permission_classes = [permisionCustom.DjanggoObjectsPermisions]
     
     @action(detail=False, permission_classes=[permisionCustom.HasPermissionHitory])
@@ -167,10 +224,10 @@ class CustomerView(ModelViewSet):
              return Response("NO VALIDATION", status=status.HTTP_203_NON_AUTHORITATIVE_INFORMATION) 
          (user, created) = Customer.objects.get_or_create(user_id =req.user.id)
          if req.method == 'GET':
-           ser = serializer.CustomerSerializer(user)
+           ser = Serializer.CustomerSerializer(user)
            return Response(ser.data, status=status.HTTP_200_OK)
          if req.method == 'PUT':
-           ser = serializer.CustomerSerializer(user, data=req.data)
+           ser = Serializer.CustomerSerializer(user, data=req.data)
            ser.is_valid(raise_exception=True)
            ser.save()
            return Response(ser.data, status=status.HTTP_201_CREATED)
