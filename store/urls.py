@@ -4,6 +4,7 @@ from rest_framework.routers import SimpleRouter
 from . import views
 
 router = SimpleRouter()
+
 router.register(
     'collection',
     views.CollectionModelView
@@ -41,9 +42,11 @@ router.register(
 # Product Nested Router #
 domains_router_product= routers.NestedSimpleRouter(router, r'product', lookup='product')
 domains_router_product.register(r'reviews', views.ReviewModelVIew, basename='product-reviews')
+domains_router_product.register(r'img', views.ImgViewProduct, basename='product-imgs')
+# Product Nested Router #
+
 
 # Cart Nested Router 
-
 domains_router_cart = routers.NestedSimpleRouter(router, r'cart', lookup='cart')
 domains_router_cart.register(r'cartitems', views.CartItemsModelVIew, basename='cart-reviews')
 
@@ -53,7 +56,9 @@ urlpatterns = [
     path('',include(router.urls)),
     path('',include(domains_router_product.urls)),
     path('',include(domains_router_cart.urls)),
+    path('hello/', views.action_hello)
 
-] 
+]
+print("-----------URL PATTERNS--------------") 
 # print(urlpatterns)
 # print(router.urls)

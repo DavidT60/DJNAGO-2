@@ -16,9 +16,16 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 import debug_toolbar
+from django.conf.urls.static import static
+from django.conf import settings
 
 admin.site.site_header = 'Storefront Admin'
 admin.site.index_title = 'Admin Panel'
+
+
+img_roots = static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+print("IMG ROOT")
+print(img_roots)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -26,4 +33,4 @@ urlpatterns = [
     path('__debug__/', include(debug_toolbar.urls)),
     path('auth/', include('djoser.urls')),
     path('auth/', include('djoser.urls.jwt')),
-]
+] +  img_roots

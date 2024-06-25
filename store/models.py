@@ -1,8 +1,9 @@
-from django.core.validators import MinValueValidator
+from django.core.validators import MinValueValidator, FileExtensionValidator
 from django.db import models
 from django.conf import settings
 from uuid import uuid4
-
+from . import imgSizeValidation
+from django.core.exceptions import ValidationError
 
 class Promotion(models.Model):
     description = models.CharField(max_length=255)
@@ -32,6 +33,8 @@ class Product(models.Model):
 
     class Meta:
         ordering = ['title']
+
+
 
 
 class Customer(models.Model):
@@ -105,6 +108,25 @@ class Review(models.Model):
      product = models.ForeignKey(Product, on_delete=models.PROTECT)
      name  = models.CharField(max_length=255)
      text = models.TextField()
+
+
+def upload_to(instance, filename):
+    print('look at in the instance')
+    # print(dir(instance))
+    # validate_max_size(instance.imgField)
+    return 'images/{filename}'.format(filename=filename)
+
+def validate_max_size(file):
+    print("Invoking Validator")
+    print(dir(file))
+    max_size_kb = 50 * 1024 # kb
+    if file.size > max_size_kb:
+         raise ValidationError(f'Sorry Image size exceeds maximum limit of {max_size_kb / 1024}')
+    
+class productImg(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='imgs') # if we delete the product it will delete the img 
+    imgBase = models.BinaryField(blank=True)
+    imgField = models.ImageField(upload_to=upload_to,blank=True, null=True,validators=[FileExtensionValidator(allowed_extensions=['png','jpg']), validate_max_size])
 
 class Cart(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid4)

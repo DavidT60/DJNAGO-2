@@ -19,6 +19,10 @@ class InventoryFilter(admin.SimpleListFilter):
         if self.value() == '<10':
             return queryset.filter(inventory__lt=10)
 
+class ProductImgTab(admin.TabularInline):
+    autocomplete_fields = ['product']
+    model = models.productImg
+    
 
 @admin.register(models.Product)
 class ProductAdmin(admin.ModelAdmin):
@@ -34,6 +38,7 @@ class ProductAdmin(admin.ModelAdmin):
     list_per_page = 10
     list_select_related = ['collection']
     search_fields = ['title']
+    inlines = [ProductImgTab]
 
     def collection_title(self, product):
         return product.collection.title

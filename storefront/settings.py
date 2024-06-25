@@ -12,12 +12,28 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 from pathlib import Path
 from datetime import timedelta
+import os
 
+print("Show Enviriment....")
+print(os.environ.values())
 
 AUTH_USER_MODEL='party.Users'
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent # /home/dari/Django-2
+
+print("BASE DIR")
+print(BASE_DIR)
+
+# Actual directory user files go to
+MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'store')
+
+
+print("MEDIA_ROOT")
+print(MEDIA_ROOT)
+
+# URL used to access the media
+MEDIA_URL = '/media/'
 
 
 # Quick-start development settings - unsuitable for production
@@ -29,8 +45,8 @@ SECRET_KEY = 'django-insecure-hs6j037urx6iav+7#10%-vu4l4f5@@-1_zo)oft4g7$vf2$jmp
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
-
+ALLOWED_HOSTS =['*']
+CORS_ALLOW_ALL_ORIGINS = True
 
 
 # Application definition
@@ -44,19 +60,20 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'debug_toolbar',
+    'corsheaders',
     'django_filters',
     'djoser',
     'party',
     'store',
     'tags',
     'likes',
-
 ]
 
 
 
 MIDDLEWARE = [
     'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -67,12 +84,13 @@ MIDDLEWARE = [
 ]
 
 
+
 INTERNAL_IPS = [
-    # ...
+    # ... #
     '127.0.0.1',
     '10.0.0.16',
-    '10.0.0.10'
-    # ...
+    '10.0.0.12'
+    # ... #
 ]
 
 ROOT_URLCONF = 'storefront.urls'
@@ -103,6 +121,12 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     )
 }
+
+FILE_UPLOAD_HANDLERS=[
+    "django.core.files.uploadhandler.MemoryFileUploadHandler",
+    "django.core.files.uploadhandler.TemporaryFileUploadHandler",
+]  
+
 
 
 SIMPLE_JWT = {
@@ -175,3 +199,12 @@ DJOSER = {
 
     },
 }
+
+# EMAIL CONFIGURATION #
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'localhost'
+EMAIL_PORT = 2525
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''
+DEFAULT_FROM_IMG='test@gmail.com'
+

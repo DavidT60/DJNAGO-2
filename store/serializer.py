@@ -5,6 +5,8 @@ from rest_framework import serializers
 from . import models 
 from . import signals
 
+import base64
+
 
 # COLLECTION SERIALIZER SECTION #
 class CollectionSerializer(serializers.ModelSerializer):
@@ -12,6 +14,68 @@ class CollectionSerializer(serializers.ModelSerializer):
     class Meta:
          model = models.Collection
          fields = ['title', 'products_counts']
+
+
+
+
+
+# REVIEW SERIALIZER SECTION #
+class ReviewSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+         model = models.Review
+         fields = ['id','name', 'text']
+
+    def create(self, validated_data):
+         get_product_content_id = self.context['product_id']
+         return models.Review.objects.create(product_id=get_product_content_id, **validated_data)
+    
+
+
+# product img serializer #
+class ProductImgSerializer(serializers.ModelSerializer):
+     imgField = serializers.ImageField()
+     class Meta:
+          model = models.productImg
+          fields = ['id','product','imgField']
+
+
+class ProductPostImgSerializer(serializers.Serializer):
+     imgField = serializers.ImageField()
+     class Meta:
+          model = models.productImg
+          fields = ['id','product','imgField']
+     
+     def create(self, validated_data):
+         print("Adding the main request to create")
+         get_product_content_id = self.context['product_id']
+         print(validated_data)
+         print(self.context['request'].FILES)
+
+     #     img_Base64 = self.context['request'].FILES['imgBase'].read()
+     #     validated_data['imgBase'] = img_Base64
+         return models.productImg.objects.create(product_id=get_product_content_id, **validated_data)
+     
+     def to_internal_value(self, data):
+          print("Testing File Data")
+          # print("TO INTERNAL VALUE")
+          # print(data)
+          # if 'imgBase' in data:
+          #      print(self.context['request'].FILES['imgBase'].read())
+          #      data['imgBase'] = self.context['request'].FILES['imgBase'].read()
+          #      print(data['imgBase'])
+          return super().to_internal_value(data)
+     
+     def validate_imgField(self, value): 
+          print("Perform some validatopm for the imageField")
+          max_size_kb = 50 * 1024 # kb
+          if value.size > max_size_kb:
+              raise serializers.ValidationError(f'Image size exceeds maximum limit of {max_size_kb / 1024} kb')
+          return value
+     
+# Product img Serializer #
+
+
 
 
 # PRODUCT SERIALIZER SECTION #
@@ -25,11 +89,13 @@ class ProductSerializer(serializers.ModelSerializer):
     )
  
     price_with_taxt = serializers.SerializerMethodField(method_name='tax_calculation')
+    
+    imgs = ProductImgSerializer(many=True, read_only=True)
 
 
     class Meta:
         model = models.Product
-        fields = ['id','title', 'collection', 'unit_price', 'price_with_taxt']
+        fields = ['id','title', 'collection', 'unit_price', 'price_with_taxt', 'imgs']
 
     #overwritting data:
     def validate(self, attrs):
@@ -39,18 +105,27 @@ class ProductSerializer(serializers.ModelSerializer):
 
 
 
+# product img serializer #
+# class ProductImg(serializers.ModelSerializer):
+#      imgBase = serializers.ImageField()
+#      class Meta:
+#           model = models.productImg
+#           fields = ['id','product','imgField']
 
-
-# COLLECTION SERIALIZER SECTION #
-class ReviewSerializer(serializers.ModelSerializer):
-    class Meta:
-         model = models.Review
-         fields = ['id','name', 'text']
-    
-    def create(self, validated_data):
-         get_product_content_id = self.context['product_id']
-         return models.Review.objects.create(product_id=get_product_content_id, **validated_data)
-
+#      def create(self, validated_data):
+#          get_product_content_id = self.context['product_id']
+#          img_Base64 = self.context['request'].FILES['imgBase'].read()
+#          validated_data['imgBase'] = img_Base64
+#          return models.productImg.objects.create(product_id=get_product_content_id, **validated_data)
+     
+     # def to_internal_value(self, data):
+     #      print("TO INTERNAL VALUE")
+     #      print(data)
+     #      if 'imgBase' in data:
+     #           print(self.context['request'].FILES['imgBase'].read())
+     #           data['imgBase'] = self.context['request'].FILES['imgBase'].read()
+     #           print(data['imgBase'])
+     #      return super().to_internal_value(data)
 
 
 # Cart Items Serializer 

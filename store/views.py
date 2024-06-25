@@ -13,10 +13,12 @@ from rest_framework import permissions
 from django_filters.rest_framework import DjangoFilterBackend
 from django_filters import rest_framework as filters
 import django_filters
+import base64
+
 
 
 from . import permissions as permisionCustom
-from .models import Product, Collection, Review, Cart, CartItem, Customer, Order
+from .models import Product, Collection, Review, Cart, CartItem, Customer, Order, productImg
 from . import serializer as Serializer
 
 # COLLECTION VIEW SECTION #
@@ -73,7 +75,7 @@ class ProductModelView(ModelViewSet):
 
    def get_queryset(self):
       req= self.request
-      queryset =  Product.objects.select_related('collection').all()
+      queryset =  Product.objects.select_related('collection').prefetch_related('imgs').all()
 
       # URL BODY: http://127.0.0.1:8000/store/product/?collection_id=3
       collection_id = req.query_params.get('collection_id')
@@ -161,6 +163,7 @@ class OrderView(ModelViewSet):
 class ReviewModelVIew(ModelViewSet):
     
     def get_queryset(self):
+        print("performing view action....")
         return Review.objects.filter(product_id=self.kwargs['product_pk'])
      
     def get_serializer_class(self):
@@ -168,9 +171,41 @@ class ReviewModelVIew(ModelViewSet):
     
     def get_serializer_context(self):
        return {
-          'product_id': self.kwargs['product_pk']
+          'product_id': self.kwargs['product_pk'],
+          'request':self.request.FILES
        }
+
+class ImgViewProduct(ModelViewSet):
+    def get_queryset(self):
+        print("Ivoking img Requ3wts")
+        return  productImg.objects.filter(product_id=self.kwargs['product_pk'])
+
+    def get_serializer_class(self):        
+       if self.request.method == 'GET':  
+         print("Data Request GET")
+         return Serializer.ProductImgSerializer
+       
+       elif self.request.method == 'POST':
+         print("Data Request Post")
+         return Serializer.ProductPostImgSerializer
     
+    def get_serializer_context(self):
+       return {
+                'product_id': self.kwargs['product_pk'],
+                'request': self.request
+             }
+    # Overwrite the create method form (ModelViewSet)
+    # def create(self, request, *args, **kwargs):
+    #     serializer = self.get_serializer(data=request.data)
+    #     serializer.is_valid(raise_exception=True)
+    #     headers = self.get_success_headers(serializer.data)
+    #     order_serializer = self.perform_create(serializer)
+    #     print(serializer)
+
+    #     return Response('ok',status=status.HTTP_201_CREATED, headers=headers)
+    
+
+
 
 # CART SECTION # 
 class CartModelVIew(ModelViewSet):
@@ -231,3 +266,10 @@ class CustomerView(ModelViewSet):
            ser.is_valid(raise_exception=True)
            ser.save()
            return Response(ser.data, status=status.HTTP_201_CREATED)
+         
+from django.shortcuts import render
+from django.core.mail import send_mail
+def action_hello(req:Request):
+    print("Sending Email....")
+    send_mail(subject='New Task', from_email='test@gmail.com',message="This is our new Task", recipient_list=['garmendiadavid02@gmail.com'])
+    return render(req, 'hello.html', {'name': 'Mosh'})

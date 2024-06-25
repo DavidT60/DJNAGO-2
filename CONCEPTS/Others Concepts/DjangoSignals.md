@@ -110,7 +110,7 @@ Signals in Django are a powerful mechanism for communication between different p
 
    ![alt text](image.png)
 
- In other conclusion, Signals are used to perform some action on the modification/creation of a particular entry in the Database. For example, One would want to create a profile instance, as soon as a new user instance is created in Database as before.
+ In other words, Signals are used to perform some action on the modification/creation of a particular entry in the Database. For example, One would want to create a profile instance, as soon as a new user instance is created in Database as before.
   
     
 
