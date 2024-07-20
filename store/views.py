@@ -267,9 +267,13 @@ class CustomerView(ModelViewSet):
            ser.save()
            return Response(ser.data, status=status.HTTP_201_CREATED)
          
+
+         
 from django.shortcuts import render
 from django.core.mail import send_mail
+from .tasks import send_emails_notification 
+
 def action_hello(req:Request):
     print("Sending Email....")
-    send_mail(subject='New Task', from_email='test@gmail.com',message="This is our new Task", recipient_list=['garmendiadavid02@gmail.com'])
+    send_emails_notification.delay("TEST")
     return render(req, 'hello.html', {'name': 'Mosh'})

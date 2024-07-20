@@ -55,4 +55,4 @@ a custom command for the store application from the tutorial.
    There is a lot more that you can implement using custom commands in  Django.
    documentation:  https://docs.djangoproject.com/en/5.0/howto/custom-management-commands/
    
-   
+      
