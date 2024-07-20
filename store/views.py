@@ -77,7 +77,7 @@ class ProductModelView(ModelViewSet):
       req= self.request
       queryset =  Product.objects.select_related('collection').prefetch_related('imgs').all()
 
-      # URL BODY: http://127.0.0.1:8000/store/product/?collection_id=3
+      # URL BODY: http://127.0.0.1:8000/store/product/?collection_id=3http://127.0.0.1:8000/store/product/?collection_id=3
       collection_id = req.query_params.get('collection_id')
       if collection_id != None:
           return queryset.filter(collection_id=collection_id)  
@@ -271,5 +271,5 @@ from django.shortcuts import render
 from django.core.mail import send_mail
 def action_hello(req:Request):
     print("Sending Email....")
-    send_mail(subject='New Task', from_email='test@gmail.com',message="This is our new Task", recipient_list=['garmendiadavid02@gmail.com'])
+    # send_mail(subject='New Task', from_email='test@gmail.com',message="This is our new Task", recipient_list=['garmendiadavid02@gmail.com'])
     return render(req, 'hello.html', {'name': 'Mosh'})

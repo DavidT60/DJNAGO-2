@@ -31,7 +31,9 @@ This is like running a difficult and big function in another partition of our ap
 ![alt text](image-2.png)
 
 
-# How Use it #
+# How Use it #*
+**installing Docker**
+``https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-20-04``
 Installing Redis using Docker:
   ``` docker run -d -p 6379:6379```
   *6379*: Means FROM 6379 TO 6379
@@ -57,7 +59,7 @@ Installing Redis using Docker:
    *CREATED*          
     24 seconds ago
    
-   *STATUS*         
+   *STATUS*   
     Up 21 seconds
 
    *PORTS*     
