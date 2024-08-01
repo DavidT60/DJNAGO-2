@@ -208,3 +208,26 @@ EMAIL_HOST_USER = ''
 EMAIL_HOST_PASSWORD = ''
 DEFAULT_FROM_IMG='test@gmail.com'
 
+
+
+from celery.schedules import crontab
+
+# https://docs.celeryq.dev/en/stable/reference/celery.schedules.html
+
+# CELERY_ CONFIGURATION # 
+CELERY_BROKER_URL = 'redis://localhost:6379/1'
+CELERY_TIMEZONE= TIME_ZONE
+CELERY_BEAT_SCHEDULE = {
+    'send_emails_notification':{
+        'task':'store.tasks.send_emails_notification',
+        'schedule': 5, 
+    }
+}
+# CELERY_BEAT_SCHEDULE = {
+#     'send_emails_notification':{
+#         'task':'store.tasks.send_emails_notification',
+#         'schedule': crontab(day_of_week=1, hour=7, minute=30), # you will invoke this tasks
+#         'kwargs': {}, # optional,
+#         'args:':[] # optional 
+#     }
+# }
