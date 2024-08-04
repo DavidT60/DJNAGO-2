@@ -2,6 +2,7 @@ from django.shortcuts import get_list_or_404, get_object_or_404
 from django.db.models.aggregates import Count
 from django import forms
 
+
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.request import Request
@@ -273,8 +274,24 @@ class CustomerView(ModelViewSet):
 from django.shortcuts import render
 from django.core.mail import send_mail
 from .tasks import send_emails_notification 
+from django.core.cache import cache
+from django.views.decorators.cache import cache_page
+from requests import get
 
+# def action_hello(req:Request):
+#     KEY_CACHE = "httpbin"
+#     main_objsct =  Product.objects.select_related('collection').prefetch_related('imgs').all()
+#     print(main_objsct)
+#     if not cache.get(KEY_CACHE):
+#         print("FROM CACHE")
+#         # store cache informaction #
+#         request = get('https://httpbin.org/delay/2')
+#         response = request.json()
+#         cache.set(KEY_CACHE, response, timeout=60) # data will be store for 60 seconds
+#     return render(req, 'hello.html', {'name':cache.get(KEY_CACHE)})
+
+@cache_page(60) # Means 60 seconds
 def action_hello(req:Request):
-    print("Sending Email....")
-    send_emails_notification.delay("TEST")
-    return render(req, 'hello.html', {'name': 'Mosh'})
+    request = get('https://httpbin.org/delay/2')
+    response = request.json()
+    return render(req, 'hello.html', {'name':response})
