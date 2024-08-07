@@ -28,6 +28,7 @@ print("IMG ROOT")
 print(img_roots)
 
 urlpatterns = [
+    path('', include('party.urls')), # pointing to the root end point [party.urls]
     path('admin/', admin.site.urls),
     path('store/', include('store.urls')),
     path('__debug__/', include(debug_toolbar.urls)),

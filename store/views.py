@@ -277,6 +277,9 @@ from .tasks import send_emails_notification
 from django.core.cache import cache
 from django.views.decorators.cache import cache_page
 from requests import get
+import logging
+
+logger = logging.getLogger(__name__) # Capturing from __name___
 
 # def action_hello(req:Request):
 #     KEY_CACHE = "httpbin"
@@ -290,8 +293,8 @@ from requests import get
 #         cache.set(KEY_CACHE, response, timeout=60) # data will be store for 60 seconds
 #     return render(req, 'hello.html', {'name':cache.get(KEY_CACHE)})
 
-@cache_page(60) # Means 60 seconds
 def action_hello(req:Request):
+    logger.info("Load http")
     request = get('https://httpbin.org/delay/2')
     response = request.json()
     return render(req, 'hello.html', {'name':response})

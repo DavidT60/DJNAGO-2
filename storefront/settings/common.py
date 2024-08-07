@@ -20,31 +20,15 @@ print(os.environ.values())
 AUTH_USER_MODEL='party.Users'
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent # /home/dari/Django-2
+BASE_DIR = Path(__file__).resolve().parent.parent.parent # /home/dari/Django-2
 
 print("BASE DIR")
 print(BASE_DIR)
 
-# Actual directory user files go to
-MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'store')
 
 
-print("MEDIA_ROOT")
-print(MEDIA_ROOT)
-
-# URL used to access the media
-MEDIA_URL = '/media/'
-
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-hs6j037urx6iav+7#10%-vu4l4f5@@-1_zo)oft4g7$vf2$jmp'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
 ALLOWED_HOSTS =['*']
 CORS_ALLOW_ALL_ORIGINS = True
 
@@ -75,6 +59,7 @@ MIDDLEWARE = [
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -137,17 +122,7 @@ SIMPLE_JWT = {
   }
 
 
-#- Database -#
-# https://docs.djangoproject.com/en/3.2/ref/settings/#databases
-DATABASES = {
-    'default': {
-       'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'DJANGO-34',
-        'HOST': 'localhost',
-        'USER': 'postgres',
-        'PASSWORD': '1234'
-    }
-}
+
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -186,6 +161,15 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'STATIC')
+
+
+print("MEDIA_ROOT")
+
+# URL used to access the media
+# Actual directory user files go to
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'store')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
@@ -244,3 +228,36 @@ CACHES = {
 
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_CACHE_ALIAS = "default"
+
+
+LOGGING = {
+     'version':1,
+     'disable_existing_loggers': False,
+     'handlers':{
+        'console':{
+             'class':'logging.StreamHandler',
+        },
+
+        'file':{
+            'class':'logging.FileHandler',
+            'filename': 'loggerFile.log',
+            'formatter':'verbose'
+
+        }
+     },
+
+     'loggers':{
+          '':{
+            'handlers':['console','file'],
+            'level': os.environ.get('DJANGO_LOG_LEVEL','INFO')
+           }
+     },
+
+     'formatters':{
+          'verbose':{
+               'format':'{filename} ({levelname}) - {name} - {message}',
+               'style': '{'
+          }
+     }
+  }
+

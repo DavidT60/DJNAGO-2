@@ -1,0 +1,22 @@
+django.utils.autoreload - Watching for file changes with StatReloader
+django.utils.autoreload - Watching for file changes with StatReloader
+django.request - Not Found: /{'% static 'party/style.css' %'}
+django.utils.autoreload - /home/david/Django_main/DJNAGO-2/storefront/settings.py changed, reloading.
+autoreload.py (INFO) - django.utils.autoreload - Watching for file changes with StatReloader
+log.py (WARNING) - django.request - Not Found: /{'% static '/party/style.css' %'}
+log.py (WARNING) - django.request - Not Found: /{'% static 'static/party/style.css' %'}
+autoreload.py (INFO) - django.utils.autoreload - Watching for file changes with StatReloader
+log.py (WARNING) - django.request - Not Found: /{'% static 'party/style.css' %'}
+autoreload.py (INFO) - django.utils.autoreload - Watching for file changes with StatReloader
+log.py (WARNING) - django.request - Not Found: /{'% static 'party/style.css' %'}
+autoreload.py (INFO) - django.utils.autoreload - Watching for file changes with StatReloader
+log.py (WARNING) - django.request - Not Found: /store/hello.hrml
+views.py (INFO) - store.views - Load http
+autoreload.py (INFO) - django.utils.autoreload - Watching for file changes with StatReloader
+log.py (WARNING) - django.request - Unauthorized: /store/collection/
+log.py (WARNING) - django.request - Forbidden: /store/collection/
+log.py (WARNING) - django.request - Bad Request: /store/collection/
+autoreload.py (INFO) - django.utils.autoreload - Watching for file changes with StatReloader
+autoreload.py (INFO) - django.utils.autoreload - Watching for file changes with StatReloader
+log.py (WARNING) - django.request - Not Found: /favicon.ico
+log.py (WARNING) - django.request - Not Found: /store/

@@ -219,6 +219,6 @@ redis:
           *-it*: Interative
 
           *redis-cli*: The command that we want execute
-          inside this container.([redis-cli doc](https://redis.io/docs/latest/develop/connect/cli/))
+          inside this container.([redis-clik](https://redis.io/docs/latest/develop/connect/cli/))
 
      

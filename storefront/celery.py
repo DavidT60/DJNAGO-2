@@ -10,7 +10,7 @@ import os
 # app.autodiscover_tasks()
 
 # Another way 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'storefront.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'storefront.settings.development')
 app = Celery('storefront')
 app.config_from_object('django.conf:settings', namespace='CELERY')
 app.autodiscover_tasks()
