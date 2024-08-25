@@ -7,7 +7,13 @@ DEBUG = False
 SECRET_KEY = os.environ['SECRET_KEY']
 REDIS_URL = os.environ['REDISCLOUD_URL']
  # SECURITY WARNING: don't run with debug turned on in production!
-ALLOWED_HOSTS =['dav-prod-195f10a4c0c4.herokuapp.com/']
+
+ALLOWED_HOSTS = [".herokuapp.com", "dav-prod-195f10a4c0c4.",
+                 "http://dav-prod-195f10a4c0c4.herokuapp.com",
+                 "https://dav-prod-195f10a4c0c4.herokuapp.com",
+                 "http://dav-prod-195f10a4c0c4.herokuapp.com",
+                 "dav-prod-195f10a4c0c4.herokuapp.com",
+                 ]
 
 DATABASES = {
       'default': dj_database_url.config()

@@ -21,3 +21,9 @@ autoreload.py (INFO) - django.utils.autoreload - Watching for file changes with 
 log.py (WARNING) - django.request - Not Found: /favicon.ico
 log.py (WARNING) - django.request - Not Found: /store/
 autoreload.py (INFO) - django.utils.autoreload - Watching for file changes with StatReloader
+autoreload.py (INFO) - django.utils.autoreload - Watching for file changes with StatReloader
+log.py (WARNING) - django.request - Not Found: /favicon.ico
+log.py (WARNING) - django.request - Unauthorized: /store/order/
+autoreload.py (INFO) - django.utils.autoreload - /home/david/Django_main/DJNAGO-2/storefront/settings/common.py changed, reloading.
+autoreload.py (INFO) - django.utils.autoreload - Watching for file changes with StatReloader
+autoreload.py (INFO) - django.utils.autoreload - Watching for file changes with StatReloader
