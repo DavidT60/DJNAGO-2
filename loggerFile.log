@@ -20,3 +20,4 @@ autoreload.py (INFO) - django.utils.autoreload - Watching for file changes with 
 autoreload.py (INFO) - django.utils.autoreload - Watching for file changes with StatReloader
 log.py (WARNING) - django.request - Not Found: /favicon.ico
 log.py (WARNING) - django.request - Not Found: /store/
+autoreload.py (INFO) - django.utils.autoreload - Watching for file changes with StatReloader

@@ -14,18 +14,11 @@ from pathlib import Path
 from datetime import timedelta
 import os
 
-print("Show Enviriment....")
-print(os.environ.values())
 
 AUTH_USER_MODEL='party.Users'
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent # /home/dari/Django-2
-
-print("BASE DIR")
-print(BASE_DIR)
-
-
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
