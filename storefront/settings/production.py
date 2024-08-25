@@ -5,7 +5,7 @@ from .common import *
 
 DEBUG = False 
 SECRET_KEY = os.environ['SECRET_KEY']
-REDIS_URL = os.environ['REDIS_URL']
+REDIS_URL = os.environ['REDISCLOUD_URL']
  # SECURITY WARNING: don't run with debug turned on in production!
 ALLOWED_HOSTS =['dav-prod-195f10a4c0c4.herokuapp.com/']
 
@@ -24,7 +24,8 @@ CACHES = {
     }
 }
 
-EMAIL_BACKEND = os.environ['MAILGUN_SMTP_SERVER'] 
-EMAIL_PORT = 2525
-EMAIL_HOST_USER = ''
-EMAIL_HOST_PASSWORD = ''
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = os.environ['MAILGUN_SMTP_SERVER']
+EMAIL_HOST_USER = os.environ['MAILGUN_SMTP_LOGIN']
+EMAIL_HOST_PASSWORD = os.environ['MAILGUN_SMTP_PASSWORD']
+EMAIL_PORT= os.environ['MAILGUN_SMTP_PORT']
