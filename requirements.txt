@@ -10,11 +10,11 @@ pillow==10.4.0
 redis==5.0.7
 celery==5.4.0
 flower==2.0.1
-pytest=="*"
-pytest-django=="*"
+pytest==8.3.1
+pytest-django==4.8.0
 gunicorn==22.0.0
 pytest==8.3.1
 pytest-django==4.8.0
 model-bakery==1.18.2
 locust==2.29.1
-dj-database-url=="*"
+dj-database-url==2.2.0
